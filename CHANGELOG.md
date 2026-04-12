@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.4](https://github.com/Roberdan/convergio-org/compare/convergio-org-v0.1.3...convergio-org-v0.1.4) (2026-04-12)
+
+
+### Bug Fixes
+
+* allow absolute paths in project/repo scanners ([#6](https://github.com/Roberdan/convergio-org/issues/6)) ([6eb2349](https://github.com/Roberdan/convergio-org/commit/6eb2349c9912c8244c8dbe7eb6579307e0d010d2))
+
 ## [0.1.3](https://github.com/Roberdan/convergio-org/compare/convergio-org-v0.1.2...convergio-org-v0.1.3) (2026-04-12)
 
 
