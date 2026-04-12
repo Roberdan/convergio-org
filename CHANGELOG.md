@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3](https://github.com/Roberdan/convergio-org/compare/convergio-org-v0.1.2...convergio-org-v0.1.3) (2026-04-12)
+
+
+### Documentation
+
+* add .env.example with required environment variables ([#4](https://github.com/Roberdan/convergio-org/issues/4)) ([d2ab1b3](https://github.com/Roberdan/convergio-org/commit/d2ab1b3038df9468893e8ed182f19117af44c2a0))
+
 ## [0.1.2](https://github.com/Roberdan/convergio-org/compare/convergio-org-v0.1.1...convergio-org-v0.1.2) (2026-04-12)
 
 
