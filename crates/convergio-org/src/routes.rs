@@ -94,6 +94,16 @@ async fn create_org(
     State(s): State<Arc<OrgState>>,
     Json(body): Json<CreateOrgBody>,
 ) -> Json<Value> {
+    use crate::validation::{validate_id, validate_short_text};
+    if let Err(e) = validate_id(&body.id, "id") {
+        return Json(json!({"error": e}));
+    }
+    if let Err(e) = validate_short_text(&body.mission, "mission") {
+        return Json(json!({"error": e}));
+    }
+    if let Err(e) = validate_id(&body.ceo_agent, "ceo_agent") {
+        return Json(json!({"error": e}));
+    }
     let conn = match s.pool.get() {
         Ok(c) => c,
         Err(e) => return Json(json!({"error": e.to_string()})),

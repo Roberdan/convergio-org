@@ -23,6 +23,13 @@ fn default_severity() -> String {
 }
 
 pub fn queue(pool: &ConnPool, body: NotifyBody) -> Json<Value> {
+    use crate::validation::{validate_severity, validate_short_text};
+    if let Err(e) = validate_severity(&body.severity) {
+        return Json(json!({"error": e}));
+    }
+    if let Err(e) = validate_short_text(&body.title, "title") {
+        return Json(json!({"error": e}));
+    }
     let conn = match pool.get() {
         Ok(c) => c,
         Err(e) => return Json(json!({"error": e.to_string()})),
@@ -89,6 +96,10 @@ pub struct TelegramTestBody {
 }
 
 pub async fn test_telegram(_pool: &ConnPool, body: TelegramTestBody) -> Json<Value> {
+    use crate::validation::validate_severity;
+    if let Err(e) = validate_severity(&body.severity) {
+        return Json(json!({"error": e}));
+    }
     match TelegramClient::from_env() {
         Ok(client) => {
             let text = format_notification(

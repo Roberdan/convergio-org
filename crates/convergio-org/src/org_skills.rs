@@ -62,6 +62,13 @@ async fn add_skill(
     Path(org_id): Path<String>,
     Json(req): Json<AddSkill>,
 ) -> Json<Value> {
+    use crate::validation::{validate_confidence, validate_id};
+    if let Err(e) = validate_id(&req.skill, "skill") {
+        return Json(json!({"error": e}));
+    }
+    if let Err(e) = validate_confidence(req.confidence) {
+        return Json(json!({"error": e}));
+    }
     let conn = match state.pool.get() {
         Ok(c) => c,
         Err(e) => return Json(json!({"error": e.to_string()})),

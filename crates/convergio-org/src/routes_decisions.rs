@@ -20,6 +20,13 @@ pub struct DecisionBody {
 }
 
 pub fn log(pool: &ConnPool, body: DecisionBody) -> Json<Value> {
+    use crate::validation::validate_long_text;
+    if let Err(e) = validate_long_text(&body.decision, "decision") {
+        return Json(json!({"error": e}));
+    }
+    if let Err(e) = validate_long_text(&body.reasoning, "reasoning") {
+        return Json(json!({"error": e}));
+    }
     let conn = match pool.get() {
         Ok(c) => c,
         Err(e) => return Json(json!({"error": e.to_string()})),
@@ -52,7 +59,7 @@ pub fn query(pool: &ConnPool, q: crate::routes::DecisionQuery) -> Json<Value> {
         Ok(c) => c,
         Err(e) => return Json(json!({"error": e.to_string()})),
     };
-    let limit = q.limit.unwrap_or(50).min(200);
+    let limit = crate::validation::validate_limit(q.limit.unwrap_or(50), 200);
     let mut conditions = Vec::new();
     let mut params: Vec<Box<dyn rusqlite::types::ToSql>> = Vec::new();
     if let Some(pid) = q.plan_id {

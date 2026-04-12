@@ -102,7 +102,7 @@ fn find_best_match<'a>(
         .map(|(_, agent)| agent)
 }
 
-fn role_keywords(role: &str) -> Vec<&'static str> {
+fn role_keywords(role: &str) -> Vec<&str> {
     match role {
         "CEO" => vec!["ceo", "chief of staff"],
         "PM" => vec!["pm", "project manager", "product owner"],
@@ -114,6 +114,7 @@ fn role_keywords(role: &str) -> Vec<&'static str> {
         "Code Reviewer" => vec!["code reviewer", "review"],
         "QA Engineer" => vec!["qa", "testing", "validator"],
         "DevOps Engineer" => vec!["devops", "deployment", "infra"],
-        other => vec![Box::leak(other.to_lowercase().into_boxed_str())],
+        // Unknown roles: no keyword matching (avoids Box::leak memory leak)
+        _ => vec![],
     }
 }
