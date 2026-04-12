@@ -66,10 +66,19 @@ pub struct ProjectScan {
 
 // ── Entry point ──────────────────────────────────────────────────────────────
 
+/// Reject path-traversal (`..`) but allow absolute paths (scanners receive real FS paths).
+fn reject_traversal(path: &Path) -> Result<(), String> {
+    for c in path.components() {
+        if matches!(c, std::path::Component::ParentDir) {
+            return Err(format!("path traversal '..' in {}", path.display()));
+        }
+    }
+    Ok(())
+}
+
 /// Scan `path` and produce a [`ProjectScan`].
 pub fn scan_project(path: &Path) -> Result<ProjectScan, String> {
-    convergio_types::platform_paths::validate_path_components(path)
-        .map_err(|e| format!("path validation failed: {e}"))?;
+    reject_traversal(path).map_err(|e| format!("path validation failed: {e}"))?;
     let profile: RepoProfile = scan_repo(path)?;
     let repo_type = detect_repo_type(path, &profile);
     let services = detect_services(path);

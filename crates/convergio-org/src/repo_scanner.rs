@@ -43,10 +43,19 @@ const MANIFEST_NAMES: &[&str] = &[
     "Package.swift",
 ];
 
+/// Reject path-traversal (`..`) but allow absolute paths (scanners receive real FS paths).
+fn reject_traversal(path: &Path) -> Result<(), String> {
+    for c in path.components() {
+        if matches!(c, std::path::Component::ParentDir) {
+            return Err(format!("path traversal '..' in {}", path.display()));
+        }
+    }
+    Ok(())
+}
+
 /// Scan a repository at `path` and produce a RepoProfile.
 pub fn scan_repo(path: &Path) -> Result<RepoProfile, String> {
-    convergio_types::platform_paths::validate_path_components(path)
-        .map_err(|e| format!("path validation failed: {e}"))?;
+    reject_traversal(path).map_err(|e| format!("path validation failed: {e}"))?;
     if !path.is_dir() {
         return Err(format!("path is not a directory: {}", path.display()));
     }
