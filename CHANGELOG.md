@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.2](https://github.com/Roberdan/convergio-org/compare/convergio-org-v0.1.1...convergio-org-v0.1.2) (2026-04-12)
+
+
+### Bug Fixes
+
+* security audit — input validation, org isolation, memory safety ([7d90365](https://github.com/Roberdan/convergio-org/commit/7d90365af30c4186402b4d053274f5d8c0f457e3))
+* security audit — input validation, org isolation, memory safety ([19054b8](https://github.com/Roberdan/convergio-org/commit/19054b89e5682abe2588ffb47a52f89836959ca1))
+
 ## [0.1.1](https://github.com/Roberdan/convergio-org/compare/convergio-org-v0.1.0...convergio-org-v0.1.1) (2026-04-11)
 
 
