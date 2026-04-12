@@ -15,6 +15,13 @@ pub struct AddMemberBody {
 }
 
 pub fn add_member(pool: &ConnPool, org_id: &str, body: AddMemberBody) -> Json<Value> {
+    use crate::validation::{validate_id, validate_short_text};
+    if let Err(e) = validate_id(&body.agent, "agent") {
+        return Json(json!({"error": e}));
+    }
+    if let Err(e) = validate_short_text(&body.role, "role") {
+        return Json(json!({"error": e}));
+    }
     let conn = match pool.get() {
         Ok(c) => c,
         Err(e) => return Json(json!({"error": e.to_string()})),
@@ -157,16 +164,24 @@ pub fn cascade_delete_org(pool: &ConnPool, id: &str) -> Json<Value> {
         Ok(c) => c,
         Err(e) => return Json(json!({"error": e.to_string()})),
     };
-    let del = |table: &str, col: &str| -> usize {
-        conn.execute(
-            &format!("DELETE FROM {table} WHERE {col} = ?1"),
+    let members = conn
+        .execute(
+            "DELETE FROM ipc_org_members WHERE org_id = ?1",
             rusqlite::params![id],
         )
-        .unwrap_or(0)
-    };
-    let members = del("ipc_org_members", "org_id");
-    let agents = del("agent_catalog", "org_id");
-    let night_agents = del("night_agent_defs", "org_id");
+        .unwrap_or(0);
+    let agents = conn
+        .execute(
+            "DELETE FROM agent_catalog WHERE org_id = ?1",
+            rusqlite::params![id],
+        )
+        .unwrap_or(0);
+    let night_agents = conn
+        .execute(
+            "DELETE FROM night_agent_defs WHERE org_id = ?1",
+            rusqlite::params![id],
+        )
+        .unwrap_or(0);
     let knowledge = conn
         .execute(
             "DELETE FROM knowledge_base WHERE domain = ?1 OR domain = ?2",
@@ -179,7 +194,9 @@ pub fn cascade_delete_org(pool: &ConnPool, id: &str) -> Json<Value> {
             rusqlite::params![format!("#org-{id}")],
         )
         .unwrap_or(0);
-    let orgs = del("ipc_orgs", "id");
+    let orgs = conn
+        .execute("DELETE FROM ipc_orgs WHERE id = ?1", rusqlite::params![id])
+        .unwrap_or(0);
     Json(json!({
         "ok": true,
         "deleted": {

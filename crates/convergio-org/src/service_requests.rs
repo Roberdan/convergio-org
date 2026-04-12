@@ -34,6 +34,13 @@ async fn create_request(
     State(state): State<Arc<OrgState>>,
     Json(req): Json<CreateRequest>,
 ) -> Json<Value> {
+    use crate::validation::validate_id;
+    if let Err(e) = validate_id(&req.requester_org, "requester_org") {
+        return Json(json!({"error": e}));
+    }
+    if let Err(e) = validate_id(&req.service_name, "service_name") {
+        return Json(json!({"error": e}));
+    }
     let conn = match state.pool.get() {
         Ok(c) => c,
         Err(e) => return Json(json!({"error": e.to_string()})),

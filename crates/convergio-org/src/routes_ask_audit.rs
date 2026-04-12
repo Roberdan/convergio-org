@@ -66,6 +66,8 @@ pub async fn get_ask_log(
     };
     ensure_ask_log_table(&conn);
 
+    let limit = crate::validation::validate_limit(q.limit, 200);
+
     let mut stmt = match conn.prepare(
         "SELECT id, question, intent, escalated, latency_ms, created_at \
          FROM org_ask_log WHERE org_id = ?1 \
@@ -76,7 +78,7 @@ pub async fn get_ask_log(
     };
 
     let rows: Vec<Value> = stmt
-        .query_map(rusqlite::params![org_id, q.limit], |r| {
+        .query_map(rusqlite::params![org_id, limit], |r| {
             Ok(json!({
                 "id":         r.get::<_, i64>(0)?,
                 "question":   r.get::<_, String>(1)?,

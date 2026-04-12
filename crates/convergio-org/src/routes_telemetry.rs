@@ -105,7 +105,7 @@ pub async fn get_org_digest(State(s): State<Arc<OrgState>>, Path(id): Path<Strin
             |r| r.get(0),
         )
         .unwrap_or(0);
-    let recent_decisions = load_recent_decisions(&conn, 5);
+    let recent_decisions = load_recent_decisions(&conn, &id, 5);
     Json(json!({
         "digest": {
             "org_id": id,
@@ -117,15 +117,19 @@ pub async fn get_org_digest(State(s): State<Arc<OrgState>>, Path(id): Path<Strin
     }))
 }
 
-fn load_recent_decisions(conn: &rusqlite::Connection, limit: u32) -> Vec<Value> {
+fn load_recent_decisions(conn: &rusqlite::Connection, org_id: &str, limit: u32) -> Vec<Value> {
+    // Filter decisions by agent membership in this org for org isolation.
     let mut stmt = match conn.prepare(
-        "SELECT decision, reasoning, agent, created_at \
-         FROM decision_log ORDER BY id DESC LIMIT ?1",
+        "SELECT d.decision, d.reasoning, d.agent, d.created_at \
+         FROM decision_log d \
+         WHERE d.agent IN (SELECT agent FROM ipc_org_members WHERE org_id = ?1) \
+            OR d.agent = 'onboard-system' \
+         ORDER BY d.id DESC LIMIT ?2",
     ) {
         Ok(s) => s,
         Err(_) => return vec![],
     };
-    stmt.query_map([limit], |r| {
+    stmt.query_map(rusqlite::params![org_id, limit], |r| {
         Ok(json!({
             "decision": r.get::<_, String>(0)?,
             "reasoning": r.get::<_, String>(1)?,

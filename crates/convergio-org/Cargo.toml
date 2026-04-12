@@ -1,9 +1,10 @@
 [package]
 name = "convergio-org"
 description = "Org chart, inter-org communication, provisioner"
-version = "0.1.1"
+version = "0.1.2"
 edition.workspace = true
 license.workspace = true
+readme = "../../README.md"
 
 [dependencies]
 convergio-types = { workspace = true }

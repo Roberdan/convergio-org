@@ -51,6 +51,10 @@ pub async fn ask_org(
     Path(org_id): Path<String>,
     Json(body): Json<AskBody>,
 ) -> Json<Value> {
+    use crate::validation::validate_long_text;
+    if let Err(e) = validate_long_text(&body.question, "question") {
+        return Json(json!({"error": e}));
+    }
     let t0 = Instant::now();
 
     // 1. Load org context from DB.

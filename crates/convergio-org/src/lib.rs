@@ -28,6 +28,7 @@ pub mod routes_projects;
 pub mod routes_telemetry;
 pub mod service_requests;
 pub mod telegram;
+pub mod validation;
 
 pub use ext::OrgExtension;
 pub use factory::{
