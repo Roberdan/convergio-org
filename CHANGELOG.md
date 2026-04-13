@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.6](https://github.com/Roberdan/convergio-org/compare/v0.1.5...v0.1.6) (2026-04-13)
+
+
+### Bug Fixes
+
+* regenerate Cargo.lock after SDK bump ([#9](https://github.com/Roberdan/convergio-org/issues/9)) ([344ac81](https://github.com/Roberdan/convergio-org/commit/344ac817fab819a91b055d42c464ab2e536301ee))
+
 ## [0.1.5](https://github.com/Roberdan/convergio-org/compare/v0.1.4...v0.1.5) (2026-04-13)
 
 
