@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.7](https://github.com/Roberdan/convergio-org/compare/v0.1.6...v0.1.7) (2026-04-13)
+
+
+### Bug Fixes
+
+* allow absolute paths in onboard repo_path ([3b4e886](https://github.com/Roberdan/convergio-org/commit/3b4e8867ca5ee5d2b2ae06980ef7c411ecb11e86))
+* allow absolute paths in onboard repo_path ([#11](https://github.com/Roberdan/convergio-org/issues/11)) ([5a75b04](https://github.com/Roberdan/convergio-org/commit/5a75b04ed6a9cba26f3b5c37ce6cb8d511739c6c))
+
 ## [0.1.6](https://github.com/Roberdan/convergio-org/compare/v0.1.5...v0.1.6) (2026-04-13)
 
 
