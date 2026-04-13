@@ -69,8 +69,14 @@ pub async fn onboard_project(
     }
 
     // 5. Generate .convergio/ directory
-    let convergio_dir =
-        crate::onboard_dotfiles::generate_convergio_dir(&blueprint, &profile).is_ok();
+    let convergio_dir = match crate::onboard_dotfiles::generate_convergio_dir(&blueprint, &profile)
+    {
+        Ok(()) => true,
+        Err(e) => {
+            tracing::warn!(org_id = %blueprint.slug, error = %e, "dotfile generation failed");
+            false
+        }
+    };
 
     // 6. Log observability events (best-effort)
     log_onboard_events(&s, &blueprint);

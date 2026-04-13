@@ -158,45 +158,52 @@ pub fn update_org(pool: &ConnPool, id: &str, body: UpdateOrgBody) -> Json<Value>
     }
 }
 
-/// CASCADE delete an org and all related records.
+/// CASCADE delete an org and all related records inside a transaction.
 pub fn cascade_delete_org(pool: &ConnPool, id: &str) -> Json<Value> {
-    let conn = match pool.get() {
+    let mut conn = match pool.get() {
         Ok(c) => c,
         Err(e) => return Json(json!({"error": e.to_string()})),
     };
-    let members = conn
+    let tx = match conn.transaction() {
+        Ok(t) => t,
+        Err(e) => return Json(json!({"error": e.to_string()})),
+    };
+    let members = tx
         .execute(
             "DELETE FROM ipc_org_members WHERE org_id = ?1",
             rusqlite::params![id],
         )
         .unwrap_or(0);
-    let agents = conn
+    let agents = tx
         .execute(
             "DELETE FROM agent_catalog WHERE org_id = ?1",
             rusqlite::params![id],
         )
         .unwrap_or(0);
-    let night_agents = conn
+    let night_agents = tx
         .execute(
             "DELETE FROM night_agent_defs WHERE org_id = ?1",
             rusqlite::params![id],
         )
         .unwrap_or(0);
-    let knowledge = conn
+    let knowledge = tx
         .execute(
             "DELETE FROM knowledge_base WHERE domain = ?1 OR domain = ?2",
             rusqlite::params![id, format!("org:{id}")],
         )
         .unwrap_or(0);
-    let channels = conn
+    let channels = tx
         .execute(
             "DELETE FROM ipc_channels WHERE name = ?1",
             rusqlite::params![format!("#org-{id}")],
         )
         .unwrap_or(0);
-    let orgs = conn
+    let orgs = tx
         .execute("DELETE FROM ipc_orgs WHERE id = ?1", rusqlite::params![id])
         .unwrap_or(0);
+    if let Err(e) = tx.commit() {
+        return Json(json!({"error": format!("commit failed: {e}")}));
+    }
     Json(json!({
         "ok": true,
         "deleted": {

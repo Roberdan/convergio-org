@@ -89,6 +89,15 @@ pub fn render_orgchart_compact(blueprint: &OrgBlueprint) -> String {
 }
 
 fn pad_line(text: &str, w: usize) -> String {
-    let content = if text.len() > w { &text[..w] } else { text };
+    let content = if text.len() > w {
+        // Find a valid char boundary at or before w to avoid panicking on multi-byte UTF-8.
+        let mut end = w;
+        while end > 0 && !text.is_char_boundary(end) {
+            end -= 1;
+        }
+        &text[..end]
+    } else {
+        text
+    };
     format!("│{:<width$}│", content, width = w)
 }
