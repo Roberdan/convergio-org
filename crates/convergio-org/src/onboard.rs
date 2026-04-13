@@ -31,15 +31,15 @@ pub async fn onboard_project(
 ) -> Json<Value> {
     let path = Path::new(&body.repo_path);
 
-    // Reject path traversal attempts
-    if let Err(e) = convergio_types::platform_paths::validate_path_components(path) {
-        return Json(json!({"ok": false, "error": format!("invalid path: {e}")}));
-    }
+    // Validate filesystem path (not a storage key — skip validate_path_components)
     if !path.is_absolute() {
         return Json(json!({"ok": false, "error": "repo_path must be absolute"}));
     }
     if !path.exists() {
         return Json(json!({"ok": false, "error": "repo_path does not exist"}));
+    }
+    if !path.is_dir() {
+        return Json(json!({"ok": false, "error": "repo_path must be a directory"}));
     }
 
     // 1. Scan the repository
