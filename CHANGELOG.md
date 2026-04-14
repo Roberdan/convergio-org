@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.10](https://github.com/Roberdan/convergio-org/compare/v0.1.9...v0.1.10) (2026-04-14)
+
+
+### Bug Fixes
+
+* security audit pass  UTF-8 panic, missing transaction, error swallowing2 ([c7a6ad3](https://github.com/Roberdan/convergio-org/commit/c7a6ad3c6875650312133f62668a86bd7caefc7f))
+
 ## [0.1.9](https://github.com/Roberdan/convergio-org/compare/v0.1.8...v0.1.9) (2026-04-13)
 
 
